@@ -2461,7 +2461,7 @@ function! s:ConfigureGrepCommandParameters()
                 \ 'opt_str_wholewordoption': '-w ',
                 \ 'req_str_escapespecialcharacters': "-\^$#.*+?()[]{}",
                 \ 'opt_str_escapespecialcharacterstwice': "|",
-                \ 'opt_str_mapexclusionsexpression': '"--ignore-dir=\"".v:val."\" --ignore-file=ext:\"".substitute(v:val, "\\*\\.", "", "")."\""',
+                \ 'opt_str_mapexclusionsexpression': '"--ignore-dir=\"".v:val."\" --ignore-file=match:\"".substitute(v:val, "\\*\\.", "", "")."\""',
                 \ 'opt_bool_filtertargetswithnofiles': '0',
                 \ 'opt_bool_bufferdirsearchallowed': '1',
                 \ 'opt_str_suppresserrormessages': '',
@@ -2815,6 +2815,10 @@ function! s:GetGrepCommandLine(pattern, add, wholeword, count, escapeArgs, filte
     endif
 
     let filesToGrep = join(fileTargetList, ' ')
+
+    if g:EasyGrepRecursive && '*' == filesToGrep
+        let filesToGrep = s:GetGrepRoot()
+    endif
 
     let win = g:EasyGrepWindow != 0 ? "l" : ""
     let grepCommand = a:count.win.com.a:add.bang." ".opts.pattern.aux_pattern_postfix." ".filesToGrep
